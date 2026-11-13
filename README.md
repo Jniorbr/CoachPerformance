@@ -353,6 +353,16 @@ Definição de pronto
 
 ---
 
+## Implementação inicial
+
+O arquivo `index.html` contém uma primeira versão navegável com quatro telas principais: Início, Treino, Nutrição e Histórico. Também permite registrar séries, refeições, cardio, hidratação e horário de sono. O mapa de telas, wireframes lo-fi, tokens visuais e avaliação heurística estão em [UX_UI.md](./UX_UI.md).
+
+Para manter esta etapa simples, os dados são salvos no `localStorage` do navegador: não há conta, sincronização entre dispositivos, integração com Claude/Firebase, estimativa de macros ou envio de fotos. Use um navegador moderno e mantenha os dados do site para preservar os registros.
+
+Esta versão é um protótipo pessoal e não substitui os requisitos de autenticação, isolamento de dados e privacidade definidos para uma versão multiusuário.
+
+---
+
 ## 07 · Checklist de validação humana
 
 | Item | Situação | Observação |

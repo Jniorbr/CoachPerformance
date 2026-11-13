@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f3ff">
+  <title>Coach — treino e saúde</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f3ff;
+      --surface: #fff;
+      --soft: #efedfa;
+      --text: #201d31;
+      --muted: #625e75;
+      --line: #e5e1f1;
+      --primary: #5938db;
+      --primary-dark: #4c35c7;
+      --accent-secondary: #006b8e;
+      --green: #237b4b;
+      --green-soft: #e5f5eb;
+      --orange: #a45b08;
+      --orange-soft: #fff1dc;
+      --shadow: 0 8px 26px #30205d0c;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+      outline: 3px solid var(--primary);
+      outline-offset: 2px;
+    }
+    .shell { max-width: 760px; min-height: 100vh; margin: auto; padding: 22px 18px 40px; }
+    .topline { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-mark {
+      display: grid; width: 42px; height: 42px; place-items: center;
+      border-radius: 14px; color: white; font-size: 21px;
+      background: linear-gradient(135deg, var(--primary), var(--accent-secondary));
+      box-shadow: 0 5px 15px #6448ef40;
+    }
+    .brand h1 { margin: 0; font-size: 18px; letter-spacing: -.3px; }
+    .brand p { margin: 1px 0 0; color: var(--muted); font-size: 12px; }
+    .privacy { color: var(--muted); font-size: 11px; text-align: right; }
+    .nav { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 18px; }
+    .nav button {
+      border: 1px solid var(--line); border-radius: 13px; padding: 9px 5px;
+      color: var(--muted); background: var(--surface); font-size: 12px; font-weight: 650;
+    }
+    .nav button span { display: block; font-size: 19px; line-height: 1.25; }
+    .nav button.active { color: white; border-color: transparent; background: linear-gradient(120deg, var(--primary), var(--accent-secondary)); }
+    .card { padding: 16px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); box-shadow: var(--shadow); }
+    .stack { display: grid; gap: 12px; }
+    .hero {
+      padding: 20px; border: 0; color: white;
+      background: linear-gradient(130deg, var(--primary), var(--accent-secondary));
+    }
+    .hero-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+    .eyebrow { margin: 0 0 3px; font-size: 12px; opacity: .84; }
+    .hero h2 { margin: 0; font-size: 23px; line-height: 1.2; }
+    .hero-copy { margin: 6px 0 0; font-size: 13px; opacity: .9; }
+    .ghost-light { border: 1px solid #ffffff70; border-radius: 10px; padding: 8px 10px; color: white; background: #ffffff20; font-size: 12px; }
+    .progress { height: 9px; margin-top: 16px; overflow: hidden; border-radius: 10px; background: #ffffff45; }
+    .progress i { display: block; height: 100%; border-radius: inherit; background: white; transition: width .2s ease; }
+    .progress-label { margin: 5px 0 0; font-size: 11px; opacity: .88; }
+    .section-title { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 0 0 11px; font-size: 14px; }
+    .subtle { color: var(--muted); font-size: 12px; }
+    .exercise-feature { display: flex; align-items: center; gap: 12px; margin: 12px 0; padding: 12px; border-radius: 14px; background: var(--soft); }
+    .exercise-icon { display: grid; flex: 0 0 50px; width: 50px; height: 50px; place-items: center; border-radius: 13px; color: #5a43d4; background: #ddd7ff; font-size: 24px; }
+    .exercise-feature strong, .exercise-feature span { display: block; }
+    .exercise-feature span { margin-top: 2px; color: var(--muted); font-size: 12px; }
+    .button {
+      border: 0; border-radius: 11px; padding: 10px 13px;
+      color: white; background: linear-gradient(120deg, var(--primary), var(--accent-secondary)); font-weight: 700;
+    }
+    .button:hover { filter: brightness(.97); }
+    .button-wide { width: 100%; }
+    .button-quiet { border: 1px solid var(--line); color: var(--text); background: var(--soft); font-weight: 600; }
+    .button-danger { border: 1px solid #f0d7d4; color: #a43e32; background: #fff7f5; }
+    .small-button { padding: 7px 10px; border-radius: 10px; font-size: 12px; }
+    .meal-list { display: flex; flex-wrap: wrap; gap: 7px; }
+    .meal-chip { border: 1px solid var(--line); border-radius: 20px; padding: 7px 10px; color: var(--muted); background: var(--soft); font-size: 12px; }
+    .meal-chip.done { border-color: transparent; color: var(--green); background: var(--green-soft); }
+    .meal-record { display: grid; gap: 8px; width: 100%; text-align: left; }
+    .meal-record-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .meal-record-head strong { font-size: 13px; }
+    .meal-record-text { margin: 0; color: var(--muted); font-size: 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .stat-card { min-height: 128px; }
+    .stat-label { margin: 0; color: var(--muted); font-size: 12px; }
+    .stat-value { margin: 5px 0 0; font-size: 22px; font-weight: 750; letter-spacing: -.5px; }
+    .stat-hint { margin: 2px 0 12px; color: var(--muted); font-size: 11px; }
+    .water-bar { height: 8px; margin: 10px 0; overflow: hidden; border-radius: 8px; background: var(--soft); }
+    .water-bar i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #16b6dc, #6448ef); }
+    .button-row { display: flex; gap: 7px; }
+    .button-row > button { flex: 1; }
+    .two-up { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .day-preview { padding: 13px; border-radius: 14px; background: var(--soft); }
+    .day-preview p { margin: 0; }
+    .day-preview .subtle { margin-top: 4px; }
+    .pill { display: inline-block; margin-top: 7px; border-radius: 20px; padding: 3px 8px; font-size: 10px; }
+    .pill-green { color: var(--green); background: var(--green-soft); }
+    .pill-orange { color: var(--orange); background: var(--orange-soft); }
+    .pill-muted { color: var(--muted); background: var(--soft); }
+    .tabs { display: flex; gap: 7px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 3px; }
+    .tab {
+      flex: 0 0 auto; border: 1px solid var(--line); border-radius: 20px; padding: 8px 12px;
+      color: var(--muted); background: var(--surface); font-size: 12px; font-weight: 650;
+    }
+    .tab.active { border-color: var(--primary); color: var(--primary-dark); background: #ece9ff; }
+    .exercise-list { display: grid; gap: 9px; }
+    .exercise-row { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; }
+    .exercise-row .exercise-icon { flex-basis: 44px; width: 44px; height: 44px; font-size: 20px; }
+    .exercise-info { flex: 1; min-width: 0; }
+    .exercise-info strong { display: block; font-size: 13px; }
+    .exercise-info span { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; }
+    .set-count { color: var(--green); font-size: 11px; font-weight: 700; }
+    .history-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+    .history-row:last-child { padding-bottom: 0; border-bottom: 0; }
+    .history-row:first-of-type { padding-top: 0; }
+    .notice { margin-bottom: 12px; padding: 11px 13px; border: 1px solid #f0d7d4; border-radius: 12px; color: #8c332a; background: #fff7f5; font-size: 12px; }
+    .empty { padding: 23px 10px; color: var(--muted); text-align: center; font-size: 13px; }
+    .overlay { position: fixed; inset: 0; z-index: 5; display: flex; align-items: flex-end; justify-content: center; padding-top: 20px; background: #17132280; }
+    .modal { width: min(100%, 560px); max-height: 88vh; overflow-y: auto; padding: 20px 18px max(20px, env(safe-area-inset-bottom)); border-radius: 22px 22px 0 0; background: var(--bg); }
+    .modal-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .modal-head h2 { margin: 0; font-size: 18px; }
+    .close-button { width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 50%; color: var(--muted); background: var(--surface); font-size: 18px; }
+    .field { display: grid; gap: 5px; margin-bottom: 12px; }
+    .field label { color: var(--muted); font-size: 12px; font-weight: 650; }
+    .field input, .field select, .field textarea {
+      width: 100%; border: 1px solid var(--line); border-radius: 11px; padding: 10px 11px;
+      color: var(--text); background: var(--surface);
+    }
+    .field textarea { min-height: 86px; resize: vertical; }
+    .set-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+    .modal-actions { display: grid; gap: 8px; margin-top: 14px; }
+    .footer-note { margin: 18px 0 0; color: var(--muted); text-align: center; font-size: 10px; }
+    @media (min-width: 620px) {
+      .shell { padding: 30px 24px 48px; }
+      .overlay { align-items: center; }
+      .modal { border-radius: 22px; }
+      .stats { grid-template-columns: repeat(4, 1fr); }
+      .stat-card { min-height: 140px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topline">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">✦</div>
+        <div><h1>Coach</h1><p>Seu ritmo, sua evolução</p></div>
+      </div>
+      <div class="privacy">Salvo neste<br>navegador</div>
+    </header>
+    <div id="app" aria-live="polite"></div>
+    <p class="footer-note">Seus registros ficam neste dispositivo e não são enviados para um servidor.</p>
+  </main>
+  <div id="modal-root"></div>
+
+  <script>
+    "use strict";
+
+    const STORAGE_KEY = "coach-performance:v1";
+    const DIVISIONS = ["push", "pull", "quadriceps", "posterior", "upper"];
+    const LABELS = {
+      push: "Push", pull: "Pull", quadriceps: "Quadríceps",
+      posterior: "Posterior e glúteo", upper: "Upper", descanso: "Descanso"
+    };
+    const PLAN = {
+      push: [
+        { id: "push1", name: "Supino inclinado com halteres", target: "4 × 8–12", icon: "🏋️" },
+        { id: "push2", name: "Crucifixo na máquina", target: "3 × 10–12", icon: "💪" },
+        { id: "push3", name: "Supino na polia", target: "3 × 10–12", icon: "🏋️" },
+        { id: "push4", name: "Elevação lateral", target: "3 × 12–15", icon: "🙆" },
+        { id: "push5", name: "Tríceps na polia", target: "3 × 10–12", icon: "💪" }
+      ],
+      pull: [
+        { id: "pull1", name: "Puxada na máquina", target: "4 × 8–12", icon: "🧗" },
+        { id: "pull2", name: "Puxada fechada", target: "3 × 8–12", icon: "🧗" },
+        { id: "pull3", name: "Remada", target: "3 × 8–12", icon: "🏋️" },
+        { id: "pull4", name: "Crucifixo inverso", target: "3 × 12–15", icon: "🙆" },
+        { id: "pull5", name: "Rosca bíceps", target: "3 × 10–12", icon: "💪" }
+      ],
+      quadriceps: [
+        { id: "quad1", name: "Agachamento no hack", target: "4 × 8–12", icon: "🦵" },
+        { id: "quad2", name: "Cadeira extensora", target: "3 × 10–12", icon: "🦵" },
+        { id: "quad3", name: "Leg press", target: "3 × 10–12", icon: "🏋️" },
+        { id: "quad4", name: "Panturrilha", target: "4 × 12–15", icon: "🦵" }
+      ],
+      posterior: [
+        { id: "post1", name: "Levantamento terra romeno", target: "4 × 8–12", icon: "🏋️" },
+        { id: "post2", name: "Mesa flexora", target: "3 × 10–12", icon: "🦵" },
+        { id: "post3", name: "Elevação pélvica", target: "3 × 8–12", icon: "🍑" },
+        { id: "post4", name: "Abdutora", target: "3 × 12–15", icon: "🦵" }
+      ],
+      upper: [
+        { id: "upper1", name: "Supino reto", target: "3 × 8–12", icon: "🏋️" },
+        { id: "upper2", name: "Remada baixa", target: "3 × 8–12", icon: "🧗" },
+        { id: "upper3", name: "Desenvolvimento", target: "3 × 8–12", icon: "🙆" },
+        { id: "upper4", name: "Puxada alta", target: "3 × 8–12", icon: "🧗" },
+        { id: "upper5", name: "Braços", target: "3 × 10–12", icon: "💪" }
+      ]
+    };
+    const MEALS = [
+      { id: "cafe", name: "Café da manhã", icon: "☕" },
+      { id: "almoco", name: "Almoço", icon: "🍛" },
+      { id: "lanche", name: "Lanche", icon: "🍎" },
+      { id: "jantar", name: "Jantar", icon: "🍽️" }
+    ];
+    const CARDIO_TYPES = ["Escada", "Esteira", "Bicicleta", "Futsal", "Outro"];
+    const WEEKDAY_PLAN = { 1: "push", 2: "pull", 3: "quadriceps", 4: "upper", 5: "posterior" };
+
+    let state = { days: {} };
+    let currentView = "dashboard";
+    let trainingTab = defaultDivision(todayKey()) === "descanso" ? "push" : defaultDivision(todayKey());
+    let modal = null;
+    let storageError = "";
+    let storageBlocked = false;
+
+    const app = document.getElementById("app");
+    const modalRoot = document.getElementById("modal-root");
+
+    function escapeHtml(value) {
+      return String(value == null ? "" : value).replace(/[&<>"']/g, function (char) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char];
+      });
+    }
+
+    function dateKey(date) {
+      return [date.getFullYear(), String(date.getMonth() + 1).padStart(2, "0"), String(date.getDate()).padStart(2, "0")].join("-");
+    }
+
+    function dateFromKey(key) {
+      const parts = key.split("-").map(Number);
+      return new Date(parts[0], parts[1] - 1, parts[2]);
+    }
+
+    function offsetDate(key, amount) {
+      const date = dateFromKey(key);
+      date.setDate(date.getDate() + amount);
+      return dateKey(date);
+    }
+
+    function todayKey() {
+      return dateKey(new Date());
+    }
+
+    function dateLabel(key, options) {
+      return dateFromKey(key).toLocaleDateString("pt-BR", options || { day: "2-digit", month: "2-digit" });
+    }
+
+    function defaultDivision(key) {
+      const weekday = dateFromKey(key).getDay();
+      return WEEKDAY_PLAN[weekday] || "descanso";
+    }
+
+    function emptyDay(key) {
+      const meals = {};
+      MEALS.forEach(function (meal) { meals[meal.id] = { status: "pending", text: "" }; });
+      return {
+        date: key,
+        division: defaultDivision(key),
+        workoutDone: false,
+        sets: {},
+        meals: meals,
+        water: 0,
+        sleepTime: "22:30",
+        cardio: null
+      };
+    }
+
+    function getDay(key) {
+      if (!state.days[key]) state.days[key] = emptyDay(key);
+      return state.days[key];
+    }
+
+    function existingDay(key) {
+      return state.days[key] || emptyDay(key);
+    }
+
+    function persist() {
+      if (storageBlocked) return false;
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        storageError = "";
+        return true;
+      } catch (error) {
+        storageError = "Não foi possível salvar neste navegador. Verifique o espaço disponível e as permissões de armazenamento.";
+        return false;
+      }
+    }
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (!saved) return;
+        const parsed = JSON.parse(saved);
+        if (!parsed || typeof parsed !== "object" || !parsed.days || typeof parsed.days !== "object") {
+          throw new Error("Formato de dados inválido.");
+        }
+        state = parsed;
+      } catch (error) {
+        storageError = "Os dados salvos não puderam ser lidos e não serão sobrescritos. Limpe os dados do site apenas se quiser recomeçar.";
+        storageBlocked = true;
+        state = { days: {} };
+      }
+    }
+
+    function saveAndRender() {
+      persist();
+      render();
+    }
+
+    function nav(active) {
+      const items = [
+        ["dashboard", "🏠", "Início"],
+        ["training", "🏋️", "Treino"],
+        ["nutrition", "🍽️", "Nutrição"],
+        ["history", "📅", "Histórico"]
+      ];
+      return '<nav class="nav" aria-label="Navegação">' + items.map(function (item) {
+        return '<button type="button" aria-current="' + (active === item[0] ? "page" : "false") +
+          '" class="' + (active === item[0] ? "active" : "") +
+          '" data-action="navigate" data-view="' + item[0] + '"><span aria-hidden="true">' +
+          item[1] + "</span>" + item[2] + "</button>";
+      }).join("") + "</nav>";
+    }
+
+    function workoutExercises(day) {
+      return PLAN[day.division] || [];
+    }
+
+    function mealCount(day) {
+      return MEALS.filter(function (meal) { return day.meals[meal.id] && day.meals[meal.id].status === "done"; }).length;
+    }
+
+    function hasDayActivity(day) {
+      return day.workoutDone ||
+        Object.keys(day.sets || {}).some(function (id) { return day.sets[id] && day.sets[id].length > 0; }) ||
+        MEALS.some(function (meal) { return day.meals[meal.id] && day.meals[meal.id].status !== "pending"; }) ||
+        day.water > 0 || Boolean(day.cardio) || day.sleepTime !== "22:30";
+    }
+
+    function dashboard() {
+      const key = todayKey();
+      const day = getDay(key);
+      const exercises = workoutExercises(day);
+      const loggedExercises = exercises.filter(function (exercise) { return (day.sets[exercise.id] || []).length > 0; }).length;
+      const hasWorkout = day.division !== "descanso";
+      const waterGoal = 3500 + (day.cardio ? 500 : 0);
+      const waterPercent = Math.min(100, Math.round(day.water / waterGoal * 100));
+      const tomorrow = existingDay(offsetDate(key, 1));
+      const yesterday = existingDay(offsetDate(key, -1));
+      const workoutLabel = day.workoutDone ? "Treino concluído! Mandou bem." : hasWorkout ? "Seu treino de hoje está pronto." : "Dia de descanso. Recuperar também faz parte.";
+
+      let html = nav("dashboard");
+      if (storageError) html += '<div class="notice" role="alert">' + escapeHtml(storageError) + "</div>";
+      html += '<section class="card hero"><div class="hero-top"><div><p class="eyebrow">HOJE · ' +
+        dateLabel(key, { weekday: "long", day: "numeric", month: "long" }) + "</p><h2>" +
+        escapeHtml(LABELS[day.division]) + '</h2><p class="hero-copy">' + workoutLabel + "</p></div>" +
+        (hasWorkout ? '<button class="ghost-light" data-action="toggle-workout">' +
+          (day.workoutDone ? "Desmarcar" : "Concluir treino") + "</button>" : "") + "</div>";
+      if (hasWorkout) {
+        html += '<div class="progress"><i style="width:' + Math.round(loggedExercises / exercises.length * 100) + '%"></i></div>' +
+          '<p class="progress-label">' + loggedExercises + " de " + exercises.length + " exercícios com séries registradas</p>";
+      }
+      html += "</section>";
+
+      if (hasWorkout) {
+        const first = exercises[0];
+        html += '<section class="card"><h3 class="section-title">⚡ Comece por aqui</h3>' +
+          '<div class="exercise-feature"><div class="exercise-icon">' + first.icon + "</div><div><strong>" +
+          escapeHtml(first.name) + '</strong><span>Alvo: ' + escapeHtml(first.target) + "</span></div></div>" +
+          '<button class="button button-wide" data-action="navigate" data-view="training">Ver treino do dia · ' +
+          exercises.length + " exercícios</button></section>";
+      }
+
+      html += '<section class="card"><h3 class="section-title">🍽️ Refeições <span class="subtle">' +
+        mealCount(day) + "/4 registradas</span></h3><div class=\"meal-list\">" +
+        MEALS.map(function (meal) {
+          const entry = day.meals[meal.id] || {};
+          const done = entry.status === "done";
+          return '<button class="meal-chip ' + (done ? "done" : "") + '" data-action="meal" data-id="' +
+            meal.id + '">' + meal.icon + " " + meal.name + (done ? " ✓" : "") + "</button>";
+        }).join("") + "</div></section>";
+
+      html += '<section class="stats"><article class="card stat-card"><p class="stat-label">🌙 Dormir às</p>' +
+        '<p class="stat-value">' + escapeHtml(day.sleepTime) + '</p><p class="stat-hint">Toque para alterar</p>' +
+        '<button class="button button-quiet small-button" data-action="sleep">Alterar horário</button></article>' +
+        '<article class="card stat-card"><p class="stat-label">🏃 Cardio</p><p class="stat-value">' +
+        (day.cardio ? escapeHtml(day.cardio.minutes) + " min" : "Não fiz") +
+        '</p><p class="stat-hint">' + (day.cardio ? escapeHtml(day.cardio.type) : "Registre sua atividade") +
+        '</p><button class="button button-quiet small-button" data-action="cardio">' +
+        (day.cardio ? "Editar cardio" : "Registrar cardio") + "</button></article></section>";
+
+      html += '<section class="card"><div class="hero-top"><div><p class="stat-label">💧 Hidratação</p><p class="stat-value">' +
+        (day.water / 1000).toLocaleString("pt-BR", { maximumFractionDigits: 2 }) + " / " +
+        (waterGoal / 1000).toLocaleString("pt-BR") + ' L</p></div><span class="subtle">' +
+        waterPercent + "%</span></div><div class=\"water-bar\"><i style=\"width:" + waterPercent +
+        '%"></i></div><div class="button-row"><button class="button button-quiet small-button" data-action="water" data-amount="-250">↩ 250</button>' +
+        '<button class="button small-button" data-action="water" data-amount="250">+250 ml</button>' +
+        '<button class="button small-button" data-action="water" data-amount="500">🥤 +500 ml</button></div></section>';
+
+      html += '<section class="two-up"><article class="day-preview"><p class="subtle">⏮️ Ontem</p><p><strong>' +
+        escapeHtml(LABELS[yesterday.division]) + "</strong></p><span class=\"pill " +
+        (yesterday.workoutDone ? "pill-green" : "pill-orange") + '">' +
+        (yesterday.workoutDone ? "Concluído" : yesterday.division === "descanso" ? "Descanso" : "Pendente") +
+        '</span></article><article class="day-preview"><p class="subtle">⏭️ Amanhã</p><p><strong>' +
+        escapeHtml(LABELS[tomorrow.division]) + '</strong></p><span class="subtle">' +
+        escapeHtml(dateLabel(tomorrow.date, { day: "numeric", month: "short" })) + "</span></article></section>";
+      return html;
+    }
+
+    function training() {
+      const day = getDay(todayKey());
+      let html = nav("training");
+      if (storageError) html += '<div class="notice" role="alert">' + escapeHtml(storageError) + "</div>";
+      html += '<h2 class="section-title">Treino de ' + escapeHtml(LABELS[trainingTab]) + '</h2>' +
+        '<div class="tabs" aria-label="Divisão do treino">' +
+        DIVISIONS.map(function (division) {
+          return '<button type="button" aria-pressed="' + (trainingTab === division) +
+            '" class="tab ' + (trainingTab === division ? "active" : "") + '" data-action="training-tab" data-id="' +
+            division + '">' + escapeHtml(LABELS[division]) + "</button>";
+        }).join("") + "</div>";
+      html += '<section class="exercise-list">';
+      PLAN[trainingTab].forEach(function (exercise) {
+        const sets = day.sets[exercise.id] || [];
+        const last = sets.length ? "Última: " + sets[sets.length - 1].weight + " kg × " + sets[sets.length - 1].reps : exercise.target;
+        html += '<button class="card exercise-row" data-action="exercise" data-id="' + exercise.id + '">' +
+          '<span class="exercise-icon" aria-hidden="true">' + exercise.icon + '</span><span class="exercise-info"><strong>' +
+          escapeHtml(exercise.name) + "</strong><span>" + escapeHtml(last) + "</span></span>" +
+          (sets.length ? '<span class="set-count">' + sets.length + " séries ✓</span>" : '<span class="subtle">›</span>') + "</button>";
+      });
+      return html + "</section>";
+    }
+
+    function nutrition() {
+      const day = getDay(todayKey());
+      let html = nav("nutrition");
+      if (storageError) html += '<div class="notice" role="alert">' + escapeHtml(storageError) + "</div>";
+      html += '<section class="card hero"><p class="eyebrow">REGISTRO DE HOJE</p><h2>Nutrição</h2>' +
+        '<p class="hero-copy">' + mealCount(day) + " de " + MEALS.length + " refeições registradas</p>" +
+        '<div class="progress"><i style="width:' + Math.round(mealCount(day) / MEALS.length * 100) + '%"></i></div></section>' +
+        '<section class="stack">';
+      MEALS.forEach(function (meal) {
+        const entry = day.meals[meal.id] || {};
+        const done = entry.status === "done";
+        const skipped = entry.status === "skipped";
+        const status = done ? "Registrada ✓" : skipped ? "Marquei que não comi" : "A registrar";
+        html += '<button class="card meal-record" data-action="meal" data-id="' + meal.id + '">' +
+          '<span class="meal-record-head"><strong>' + meal.icon + " " + meal.name + '</strong><span class="pill ' +
+          (done ? "pill-green" : skipped ? "pill-muted" : "pill-orange") + '">' + status + "</span></span>" +
+          (done && entry.text ? '<span class="meal-record-text">' + escapeHtml(entry.text) + "</span>" :
+            '<span class="meal-record-text">' + (done ? "Refeição salva sem descrição." : "Toque para registrar.") + "</span>") +
+          "</button>";
+      });
+      return html + "</section>";
+    }
+
+    function history() {
+      const today = todayKey();
+      const keys = Object.keys(state.days).filter(function (key) {
+        return key <= today && hasDayActivity(state.days[key]);
+      })
+        .sort().reverse().slice(0, 30);
+      const completed = keys.filter(function (key) { return state.days[key].workoutDone; }).length;
+      const mealsLogged = keys.reduce(function (sum, key) { return sum + mealCount(state.days[key]); }, 0);
+      let html = nav("history");
+      if (storageError) html += '<div class="notice" role="alert">' + escapeHtml(storageError) + "</div>";
+      html += '<section class="card"><h2 class="section-title">📅 Últimos registros</h2>';
+      if (!keys.length) return html + '<p class="empty">Sem registros ainda. Registre um treino, uma refeição ou outra atividade para começar seu histórico.</p></section>';
+      html += '<p class="subtle">Nos últimos ' + (keys.length === 1 ? "1 dia registrado" : keys.length + " dias registrados") + ": " + completed +
+        " treinos concluídos e " + mealsLogged + " refeições anotadas.</p>";
+      keys.forEach(function (key) {
+        const day = state.days[key];
+        html += '<div class="history-row"><div><strong>' +
+          escapeHtml(dateLabel(key, { weekday: "short", day: "numeric", month: "short" })) +
+          '</strong><div class="subtle">' + escapeHtml(LABELS[day.division]) + " · " + mealCount(day) +
+          " refeições</div></div><span class=\"pill " + (day.workoutDone ? "pill-green" : "pill-orange") + '">' +
+          (day.workoutDone ? "Concluído" : day.division === "descanso" ? "Descanso" : "Pendente") +
+          "</span></div>";
+      });
+      return html + "</section>";
+    }
+
+    function modalFrame(title, content) {
+      return '<div class="overlay" data-action="overlay-close"><section class="modal" role="dialog" aria-modal="true" aria-label="' +
+        escapeHtml(title) + '"><div class="modal-head"><h2>' + escapeHtml(title) +
+        '</h2><button class="close-button" data-action="close-modal" aria-label="Fechar">×</button></div>' +
+        content + "</section></div>";
+    }
+
+    function modalContent() {
+      if (!modal) return "";
+      const day = getDay(todayKey());
+      if (modal.type === "meal") {
+        const meal = MEALS.find(function (item) { return item.id === modal.id; });
+        const entry = day.meals[meal.id] || {};
+        return modalFrame(meal.icon + " " + meal.name,
+          '<form data-form="meal" data-id="' + meal.id + '"><div class="field"><label for="meal-text">O que você comeu?</label>' +
+          '<textarea id="meal-text" name="text" maxlength="1000" placeholder="Anote sua refeição">' +
+          escapeHtml(entry.text || "") + '</textarea></div><div class="modal-actions"><button class="button" type="button" data-action="save-form">Salvar refeição</button>' +
+          '<button class="button button-quiet" type="button" data-action="meal-skip" data-id="' + meal.id + '">Marcar como não comi</button>' +
+          '<button class="button button-quiet" type="button" data-action="close-modal">Cancelar</button></div></form>');
+      }
+      if (modal.type === "sleep") {
+        return modalFrame("Horário de dormir",
+          '<form data-form="sleep"><div class="field"><label for="sleep-time">Horário previsto</label><input id="sleep-time" name="time" type="time" value="' +
+          escapeHtml(day.sleepTime) + '" required></div><button class="button button-wide" type="button" data-action="save-form">Salvar horário</button></form>');
+      }
+      if (modal.type === "cardio") {
+        const cardio = day.cardio || { type: CARDIO_TYPES[0], minutes: 30 };
+        return modalFrame("Registrar cardio",
+          '<form data-form="cardio"><div class="field"><label for="cardio-type">Atividade</label><select id="cardio-type" name="type">' +
+          CARDIO_TYPES.map(function (type) { return '<option' + (type === cardio.type ? " selected" : "") + ">" + type + "</option>"; }).join("") +
+          '</select></div><div class="field"><label for="cardio-minutes">Duração (minutos)</label><input id="cardio-minutes" name="minutes" type="number" min="1" max="600" value="' +
+          escapeHtml(cardio.minutes) + '" required></div><div class="modal-actions"><button class="button" type="button" data-action="save-form">Salvar cardio</button>' +
+          (day.cardio ? '<button class="button button-danger" type="button" data-action="remove-cardio">Remover cardio</button>' : "") +
+          '<button class="button button-quiet" type="button" data-action="close-modal">Cancelar</button></div></form>');
+      }
+      if (modal.type === "exercise") {
+        const exercise = PLAN[modal.division].find(function (item) { return item.id === modal.id; });
+        const sets = day.sets[exercise.id] || [];
+        const rows = sets.length ? sets.map(function (set, index) {
+          return '<div class="set-row"><span>Série ' + (index + 1) + " · " + escapeHtml(set.weight) + " kg × " +
+            escapeHtml(set.reps) + '</span><button class="button button-danger small-button" type="button" data-action="remove-set" data-id="' +
+            exercise.id + '" data-index="' + index + '">Remover</button></div>';
+        }).join("") : '<p class="subtle">Ainda não há séries registradas.</p>';
+        return modalFrame(exercise.name,
+          '<p class="subtle">Alvo: ' + escapeHtml(exercise.target) + "</p>" + rows +
+          '<form data-form="set" data-id="' + exercise.id + '"><div class="section-title" style="margin-top:16px">Adicionar série</div>' +
+          '<div class="two-up"><div class="field"><label for="set-weight">Carga (kg)</label><input id="set-weight" name="weight" type="number" min="0" step="0.5" required></div>' +
+          '<div class="field"><label for="set-reps">Repetições</label><input id="set-reps" name="reps" type="number" min="1" max="999" step="1" required></div></div>' +
+          '<div class="modal-actions"><button class="button" type="button" data-action="save-form">Salvar série</button>' +
+          '<button class="button button-quiet" type="button" data-action="close-modal">Fechar</button></div></form>');
+      }
+      return "";
+    }
+
+    function render() {
+      const screens = { dashboard: dashboard, training: training, nutrition: nutrition, history: history };
+      app.innerHTML = screens[currentView]();
+      modalRoot.innerHTML = modalContent();
+      if (modal) {
+        const firstField = modalRoot.querySelector("input, textarea, select") ||
+          modalRoot.querySelector('[data-action="close-modal"]');
+        if (firstField) firstField.focus();
+      }
+    }
+
+    function openExercise(id) {
+      modal = { type: "exercise", id: id, division: trainingTab };
+      render();
+    }
+
+    function saveForm(form) {
+      if (!form.reportValidity()) return;
+      const day = getDay(todayKey());
+      const data = new FormData(form);
+      if (form.dataset.form === "meal") {
+        day.meals[form.dataset.id] = { status: "done", text: String(data.get("text") || "").trim() };
+      } else if (form.dataset.form === "sleep") {
+        day.sleepTime = String(data.get("time"));
+      } else if (form.dataset.form === "cardio") {
+        day.cardio = { type: String(data.get("type")), minutes: Number(data.get("minutes")) };
+      } else if (form.dataset.form === "set") {
+        const weight = Number(data.get("weight"));
+        const reps = Number(data.get("reps"));
+        if (!Number.isFinite(weight) || weight < 0 || !Number.isInteger(reps) || reps < 1) return;
+        day.sets[form.dataset.id] = day.sets[form.dataset.id] || [];
+        day.sets[form.dataset.id].push({ weight: weight, reps: reps, at: Date.now() });
+        modal = { type: "exercise", id: form.dataset.id, division: trainingTab };
+      }
+      if (form.dataset.form !== "set") modal = null;
+      saveAndRender();
+    }
+
+    app.addEventListener("click", function (event) {
+      const button = event.target.closest("[data-action]");
+      if (!button) return;
+      const action = button.dataset.action;
+      const day = getDay(todayKey());
+
+      if (action === "navigate") {
+        currentView = button.dataset.view;
+        modal = null;
+      } else if (action === "training-tab") {
+        trainingTab = button.dataset.id;
+      } else if (action === "toggle-workout") {
+        day.workoutDone = !day.workoutDone;
+        saveAndRender();
+        return;
+      } else if (action === "meal") {
+        modal = { type: "meal", id: button.dataset.id };
+      } else if (action === "sleep") {
+        modal = { type: "sleep" };
+      } else if (action === "cardio") {
+        modal = { type: "cardio" };
+      } else if (action === "water") {
+        const amount = Number(button.dataset.amount);
+        day.water = Math.max(0, Math.min(9999, day.water + amount));
+        saveAndRender();
+        return;
+      } else if (action === "exercise") {
+        openExercise(button.dataset.id);
+        return;
+      } else if (action === "close-modal") {
+        modal = null;
+      } else if (action === "overlay-close" && event.target === button) {
+        modal = null;
+      }
+      render();
+    });
+
+    modalRoot.addEventListener("click", function (event) {
+      const button = event.target.closest("[data-action]");
+      if (!button) return;
+      const action = button.dataset.action;
+      const day = getDay(todayKey());
+      if (action === "save-form") {
+        const form = button.closest("form[data-form]");
+        if (form) saveForm(form);
+        return;
+      } else if (action === "close-modal" || (action === "overlay-close" && event.target === button)) {
+        modal = null;
+      } else if (action === "meal-skip") {
+        day.meals[button.dataset.id] = { status: "skipped", text: "" };
+        modal = null;
+        saveAndRender();
+        return;
+      } else if (action === "remove-cardio") {
+        day.cardio = null;
+        modal = null;
+        saveAndRender();
+        return;
+      } else if (action === "remove-set") {
+        const sets = day.sets[button.dataset.id] || [];
+        sets.splice(Number(button.dataset.index), 1);
+        if (!sets.length) delete day.sets[button.dataset.id];
+        saveAndRender();
+        return;
+      }
+      render();
+    });
+
+    modalRoot.addEventListener("submit", function (event) {
+      const form = event.target.closest("form[data-form]");
+      if (!form) return;
+      event.preventDefault();
+      saveForm(form);
+    });
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && modal) {
+        modal = null;
+        render();
+      }
+    });
+
+    loadState();
+    getDay(todayKey());
+    render();
+  </script>
+</body>
+</html>
