@@ -119,7 +119,7 @@ Contraste verificado para pares de texto/controles principais: texto secundário
 
 ## 4. Telas hi-fi e navegação
 
-As quatro telas de alta fidelidade estão implementadas em [index.html](./index.html), com navegação funcional entre Início, Treino, Nutrição e Histórico. Sono, cardio, refeição e série usam formulários contextuais; eles mantêm o usuário dentro da tela e oferecem cancelar/fechar. Layout responsivo, foco visível, rótulos de formulário e estados vazios fazem parte da implementação.
+As telas de alta fidelidade estão implementadas no app carregado por Vite, com navegação funcional entre Início, Treino, Nutrição e Histórico e acesso por e-mail e senha. Sono, cardio, refeição e série usam formulários contextuais; eles mantêm o usuário dentro da tela e oferecem cancelar/fechar. Layout responsivo, foco visível, rótulos de formulário e estados vazios fazem parte da implementação.
 
 ## 5. Avaliação heurística
 
@@ -167,7 +167,7 @@ Revisão qualitativa com cinco heurísticas: visibilidade do estado; correspond�
 
 ## 6. Limites conhecidos
 
-- Dados ficam apenas no navegador/dispositivo atual; limpar os dados do site pode apagá-los. Não há conta, backup ou sincronização.
-- O histórico lista até 30 dias que tenham sido inicializados por uso do app.
+- Séries e refeições ficam no Supabase e exigem autenticação/RLS; sono, hidratação, cardio e conclusão do treino continuam no `localStorage` deste navegador e podem ser apagados ao limpar os dados do site. Esses hábitos locais não sincronizam entre dispositivos.
+- O histórico lista até 30 dias com atividade, combinando dados remotos de séries/refeições com hábitos locais.
 - O protótipo não implementa gráficos, macros, envio de fotos ou recomendações.
 - A revisão heurística é uma autoavaliação inicial; testes com usuários e verificação de contraste/teclado em dispositivos reais ainda são necessários.

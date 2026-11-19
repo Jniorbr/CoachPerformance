@@ -1,5 +1,13 @@
 # Dashboard Fitness e Saúde — Documento consolidado do MVP
 
+## Rodar o aplicativo
+
+1. Instale as dependências com `npm install`.
+2. Copie `.env.example` para `.env` e preencha `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` com os valores públicos do projeto Supabase. Não use a chave `service_role`.
+3. Inicie o servidor local com `npm run dev`.
+
+O aplicativo usa Vite e Supabase Auth. Séries de treino e refeições são armazenadas no Supabase; sono, hidratação, cardio e conclusão do treino continuam no `localStorage` deste navegador.
+
 > Natureza do documento: este material reúne as personas, as entrevistas simuladas e os requisitos do MVP em um único arquivo. As hipóteses foram geradas por IA e precisam de validação humana com entrevistas reais (3–5 usuários) antes de qualquer implementação definitiva.
 
 ---
@@ -355,11 +363,15 @@ Definição de pronto
 
 ## Implementação inicial
 
-O arquivo `index.html` contém uma primeira versão navegável com quatro telas principais: Início, Treino, Nutrição e Histórico. Também permite registrar séries, refeições, cardio, hidratação e horário de sono. O mapa de telas, wireframes lo-fi, tokens visuais e avaliação heurística estão em [UX_UI.md](./UX_UI.md).
+O `index.html` é o ponto de entrada do Vite; a interface mantém quatro telas principais: Início, Treino, Nutrição e Histórico. A autenticação usa Supabase Auth. Séries de treino e refeições são lidas e gravadas no Supabase com RLS; cardio, hidratação, horário de sono e conclusão do treino continuam no `localStorage`. O mapa de telas, wireframes lo-fi, tokens visuais e avaliação heurística estão em [UX_UI.md](./UX_UI.md).
 
-Para manter esta etapa simples, os dados são salvos no `localStorage` do navegador: não há conta, sincronização entre dispositivos, integração com Claude/Firebase, estimativa de macros ou envio de fotos. Use um navegador moderno e mantenha os dados do site para preservar os registros.
+Os dados mantidos no `localStorage` não são sincronizados entre dispositivos e podem ser apagados ao limpar os dados do site. Ainda não há integração com Claude/Firebase, estimativa de macros ou envio de fotos. Use um navegador moderno.
 
-Esta versão é um protótipo pessoal e não substitui os requisitos de autenticação, isolamento de dados e privacidade definidos para uma versão multiusuário.
+A autenticação e as políticas RLS protegem o acesso aos dados remotos. Os hábitos mantidos localmente permanecem restritos ao navegador deste dispositivo.
+
+A seção temporária **Teste CRUD** verifica as operações em `treinos_series` e deixa duas linhas identificadas como `Teste CRUD` para conferência no Table Editor.
+
+Séries e refeições que já estavam salvas localmente por versões anteriores não são migradas automaticamente.
 
 ---
 
