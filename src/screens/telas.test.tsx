@@ -171,6 +171,28 @@ describe('Histórico', () => {
     expect(await screen.findByText('Sem registros ainda')).toBeInTheDocument()
   })
 
+  it('ignora hábitos locais anteriores aos últimos 30 dias', async () => {
+    m.listarSeriesNoPeriodo.mockResolvedValue([])
+    m.listarRefeicoesNoPeriodo.mockResolvedValue([])
+    localStorage.setItem(
+      'coach-performance:v1',
+      JSON.stringify({
+        days: {
+          '2000-01-01': {
+            date: '2000-01-01',
+            division: 'push',
+            workoutDone: true,
+            water: 0,
+            sleepTime: '22:30',
+            cardio: null
+          }
+        }
+      })
+    )
+    render(<Historico />)
+    expect(await screen.findByText('Sem registros ainda')).toBeInTheDocument()
+  })
+
   it('lista os dias com refeições e séries vindos do banco', async () => {
     m.listarSeriesNoPeriodo.mockResolvedValue([serie({}), serie({})])
     m.listarRefeicoesNoPeriodo.mockResolvedValue([refeicao({})])

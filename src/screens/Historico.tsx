@@ -20,7 +20,9 @@ export function Historico() {
   const fim = hoje()
   const inicio = somarDias(fim, -(DIAS - 1))
   const habitos = useHabitos()
-  const temLocal = Object.entries(habitos.dias).some(([k, d]) => k <= fim && temAtividadeLocal(d))
+  const temLocal = Object.entries(habitos.dias).some(
+    ([k, d]) => k >= inicio && k <= fim && temAtividadeLocal(d)
+  )
 
   const consulta = useConsulta(
     () => carregarPeriodo(inicio, fim),
@@ -48,7 +50,7 @@ export function Historico() {
     series.forEach((s) => chaves.add(s.data))
     refeicoes.forEach((r) => chaves.add(r.data))
     Object.entries(habitos.dias).forEach(([k, d]) => {
-      if (k <= fim && temAtividadeLocal(d)) chaves.add(k)
+      if (k >= inicio && k <= fim && temAtividadeLocal(d)) chaves.add(k)
     })
     const linhas = [...chaves].sort().reverse().slice(0, DIAS).map((chave) => {
       const divisao = divisaoDoDia(chave)
