@@ -45,7 +45,7 @@ export async function listarSeriesPorData(data: string): Promise<TreinoSerie[]> 
     .from('treinos_series')
     .select(seriesColumns)
     .eq('data', data)
-    .order('id', { ascending: true })
+    .order('created_at', { ascending: true })
 
   if (error) throw error
   return series
@@ -58,7 +58,7 @@ export async function listarSeriesNoPeriodo(inicio: string, fim: string): Promis
     .gte('data', inicio)
     .lte('data', fim)
     .order('data', { ascending: false })
-    .order('id', { ascending: true })
+    .order('created_at', { ascending: true })
 
   if (error) throw error
   return series
