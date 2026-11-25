@@ -21,7 +21,7 @@ const sessionAccount = requireElement(document.querySelector<HTMLElement>('#sess
 const sessionMessage = requireElement(document.querySelector<HTMLElement>('#session-message'))
 
 let mode: 'signIn' | 'signUp' = 'signIn'
-let appLoaded = false
+let coachMounted = false
 let supabaseClient: SupabaseClient | null = null
 
 async function getSupabaseClient() {
@@ -76,6 +76,12 @@ async function showSession(session: Session | null) {
 
   if (!session) {
     showAuthMessage('')
+    if (coachMounted) {
+      // não deixa os dados de um usuário na tela do próximo
+      const { desmontarCoach } = await import('./mount')
+      desmontarCoach()
+      coachMounted = false
+    }
     return
   }
 
@@ -100,9 +106,10 @@ async function showSession(session: Session | null) {
   })
   sessionAccount.append(email, signOutButton)
 
-  if (!appLoaded) {
-    await import('./app.js')
-    appLoaded = true
+  if (!coachMounted) {
+    const { montarCoach } = await import('./mount')
+    montarCoach(requireElement(document.querySelector<HTMLElement>('#app')))
+    coachMounted = true
   }
 }
 
