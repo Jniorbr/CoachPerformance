@@ -388,16 +388,16 @@ As quatro telas do app são componentes React + Tailwind que leem e gravam no Su
 
 ### Estados de UI em cada tela
 
-Toda chamada ao Supabase passa pelo hook `useConsulta`, que devolve um de quatro estados. Cada tela desenha todos eles:
+Toda chamada ao Supabase passa pelo hook `useConsulta`, que devolve loading, sucesso, vazio ou erro. As telas exibem:
 
 | Estado | O que o usuário vê |
 |---|---|
 | `loading` | Skeleton (`LoadingState`), com texto para leitor de tela |
 | `success` | O conteúdo |
-| `empty` | `EmptyState` com orientação do próximo passo (Treino, Nutrição e Histórico) |
+| `empty` | `EmptyState` com orientação do próximo passo (Início, Treino, Nutrição e Histórico) |
 | `error` | `ErrorState` com mensagem amigável e **Tentar novamente** |
 
-O **Início** não tem estado vazio de propósito: é um resumo, e zero registros é um valor válido para ele.
+No **Início**, o estado vazio aparece junto ao resumo quando o dia ainda não tem séries, refeições ou hábitos registrados.
 
 ### Validação em duas camadas
 

@@ -9,10 +9,12 @@ import { CardioModal } from '../components/CardioModal'
 import type { Tela } from '../components/NavPrincipal'
 import { RefeicaoModal } from '../components/RefeicaoModal'
 import { SonoModal } from '../components/SonoModal'
+import { EmptyState } from '../components/ui/EmptyState'
 import { useConsulta } from '../hooks/useConsulta'
 import { useHabitos } from '../hooks/useHabitos'
 import { hoje, rotuloData, somarDias } from '../lib/datas'
 import { carregarDia } from '../lib/dia'
+import { temAtividadeLocal } from '../lib/habitos'
 import { divisaoDoDia, PLANO, REFEICOES, ROTULOS } from '../lib/plano'
 import type { TipoRefeicao } from '../lib/plano'
 
@@ -22,7 +24,12 @@ export function Inicio({ onNavegar }: { onNavegar: (tela: Tela) => void }) {
   const chave = hoje()
   const habitos = useHabitos()
   const [modal, setModal] = useState<Modal>(null)
-  const consulta = useConsulta(() => carregarDia(chave), 'carregar o resumo do dia', () => false, chave)
+  const consulta = useConsulta(
+    () => carregarDia(chave),
+    'carregar o resumo do dia',
+    (dados) => dados.series.length === 0 && dados.refeicoes.length === 0 && !temAtividadeLocal(habitos.obter(chave)),
+    chave
+  )
 
   if (consulta.status === 'loading') return <LoadingState linhas={4} texto="Carregando o resumo do dia..." />
   if (consulta.status === 'error' || !consulta.dados) {
@@ -34,6 +41,7 @@ export function Inicio({ onNavegar }: { onNavegar: (tela: Tela) => void }) {
   const divisao = divisaoDoDia(chave)
   const exercicios = divisao === 'descanso' ? [] : PLANO[divisao]
   const temTreino = divisao !== 'descanso'
+  const semRegistros = series.length === 0 && refeicoes.length === 0 && !temAtividadeLocal(dia)
   const idsComSerie = new Set(series.map((s) => s.exercicio_id))
   const comSeries = exercicios.filter((e) => idsComSerie.has(e.id)).length
   const refeicoesFeitas = refeicoes.filter((r) => r.status === 'done').length
@@ -59,6 +67,21 @@ export function Inicio({ onNavegar }: { onNavegar: (tela: Tela) => void }) {
         <p role="alert" className="rounded-xl border border-danger-line bg-danger-soft p-3 text-xs text-danger lg:col-span-2">
           {habitos.erro}
         </p>
+      )}
+
+      {semRegistros && (
+        <div className="lg:col-span-2">
+          <EmptyState
+            icone="✨"
+            titulo="Ainda sem registros de hoje"
+            descricao="Comece pelo treino ou anote uma refeição. Seus hábitos também podem ser registrados nesta tela."
+            acao={
+              <Button size="sm" onClick={() => onNavegar(temTreino ? 'treino' : 'nutricao')}>
+                {temTreino ? 'Ir para o treino' : 'Registrar uma refeição'}
+              </Button>
+            }
+          />
+        </div>
       )}
 
       <Card destaque className="lg:col-span-2">

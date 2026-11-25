@@ -24,6 +24,14 @@ beforeEach(() => {
 })
 
 describe('Início (resumo do dia)', () => {
+  it('mostra um próximo passo quando ainda não há registros hoje', async () => {
+    m.listarSeriesPorData.mockResolvedValue([])
+    m.listarRefeicoesPorData.mockResolvedValue([])
+    render(<Inicio onNavegar={() => {}} />)
+    expect(await screen.findByText('Ainda sem registros de hoje')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Ir para o treino|Registrar uma refeição/ })).toBeInTheDocument()
+  })
+
   it('loading → sucesso, com refeições do banco', async () => {
     m.listarSeriesPorData.mockResolvedValue([])
     m.listarRefeicoesPorData.mockResolvedValue([
