@@ -4,9 +4,9 @@
 
 1. Instale as dependências com `npm install`.
 2. Copie `.env.example` para `.env` e preencha `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` com os valores públicos do projeto Supabase. Não use a chave `service_role`.
-3. Inicie o servidor local com `npm run dev`.
+3. Inicie o servidor local com `npm run dev`. Para rodar os testes: `npm test`. Para gerar o build de produção: `npm run build`.
 
-O aplicativo usa Vite e Supabase Auth. Séries de treino e refeições são armazenadas no Supabase; sono, hidratação, cardio e conclusão do treino continuam no `localStorage` deste navegador.
+O aplicativo usa Vite, React 19, Tailwind 4 e Supabase Auth. Séries de treino e refeições são armazenadas no Supabase; sono, hidratação, cardio e conclusão do treino continuam no `localStorage` deste navegador.
 
 > Natureza do documento: este material reúne as personas, as entrevistas simuladas e os requisitos do MVP em um único arquivo. As hipóteses foram geradas por IA e precisam de validação humana com entrevistas reais (3–5 usuários) antes de qualquer implementação definitiva.
 
@@ -369,9 +369,86 @@ Os dados mantidos no `localStorage` não são sincronizados entre dispositivos e
 
 A autenticação e as políticas RLS protegem o acesso aos dados remotos. Os hábitos mantidos localmente permanecem restritos ao navegador deste dispositivo.
 
-A seção temporária **Teste CRUD** verifica as operações em `treinos_series` e deixa duas linhas identificadas como `Teste CRUD` para conferência no Table Editor.
-
 Séries e refeições que já estavam salvas localmente por versões anteriores não são migradas automaticamente.
+
+---
+
+## Front-end (Aula 04) — React + Tailwind integrado ao Supabase
+
+As quatro telas do app são componentes React + Tailwind que leem e gravam no Supabase pela camada `src/lib/data.ts`. A tela de login continua em TypeScript puro (`src/main.ts`) e, depois do login, monta o React em `#app` (`src/mount.tsx`).
+
+### Mapa das 4 telas
+
+| Tela | O que faz | Dados |
+|---|---|---|
+| **Início** | Resumo do dia: treino do dia e progresso, refeições, sono, cardio, hidratação, ontem e amanhã | Séries e refeições de hoje (Supabase) + hábitos (localStorage) |
+| **Treino** | Divisões, exercícios, registrar e remover séries (carga e repetições) | `treinos_series` (INSERT, SELECT, DELETE) |
+| **Nutrição** | Quatro refeições do dia: registrar o que comeu ou marcar "não comi" | `refeicoes` (UPSERT em `user_id, data, refeicao`) |
+| **Histórico** | Últimos 30 dias: treino concluído, refeições e séries por dia | SELECT por período nas duas tabelas |
+
+### Estados de UI em cada tela
+
+Toda chamada ao Supabase passa pelo hook `useConsulta`, que devolve um de quatro estados. Cada tela desenha todos eles:
+
+| Estado | O que o usuário vê |
+|---|---|
+| `loading` | Skeleton (`LoadingState`), com texto para leitor de tela |
+| `success` | O conteúdo |
+| `empty` | `EmptyState` com orientação do próximo passo (Treino, Nutrição e Histórico) |
+| `error` | `ErrorState` com mensagem amigável e **Tentar novamente** |
+
+O **Início** não tem estado vazio de propósito: é um resumo, e zero registros é um valor válido para ele.
+
+### Validação em duas camadas
+
+- **Front (formato e experiência):** campos controlados, mensagem ao lado do campo, botão desabilitado enquanto envia. Carga de 0 a 9999,99 kg; repetições inteiras de 1 a 999; descrição da refeição até 1000 caracteres; cardio de 1 a 600 minutos.
+- **Banco (integridade e segurança):** CHECK constraints, RLS por `auth.uid()` e unicidade da refeição por dia (veja `schema.sql`).
+
+### Tratamento de erros em 3 níveis
+
+1. **Local:** `try/catch` em cada chamada; `mensagemDeErro` (`src/lib/erros.ts`) traduz rede, sessão expirada (JWT) e RLS para texto claro. O erro técnico vai só para o console.
+2. **Contextual:** `ErrorBoundary` em volta de cada tela.
+3. **Global:** `ErrorBoundary` na raiz (`src/mount.tsx`).
+
+O SDK do Supabase já renova o JWT automaticamente; se a sessão se perder, o app volta para o login.
+
+### Componentes reutilizáveis (`src/components/ui`)
+
+`Button` (primary, secondary, ghost, danger), `Input`/`Textarea`/`Select` (com label e erro), `Card`/`CardButton`, `Badge`, `ProgressBar`, `Modal` (usa `<dialog>` nativo), `LoadingState`, `EmptyState`, `ErrorState` e `ErrorBoundary`.
+
+### Estrutura
+
+```
+src/
+  main.ts            login (Supabase Auth) e montagem do React
+  mount.tsx          raiz React (monta ao logar, desmonta ao sair)
+  App.tsx            navegação entre as 4 telas
+  screens/           Inicio, Treino, Nutricao, Historico
+  components/        modais e navegação; ui/ = componentes base
+  hooks/             useConsulta (4 estados), useHabitos (localStorage)
+  lib/               data.ts (Supabase), dia.ts, datas.ts, plano.ts, habitos.ts, erros.ts
+prompts/             prompts usados com IA (formato CTQ) e revisão crítica
+```
+
+### Responsividade
+
+Mobile-first com `sm:` (640 px), `md:` (768 px) e `lg:` (1024 px). Conferir no DevTools (Toggle device toolbar):
+
+- [ ] 375 px (celular)
+- [ ] 768 px (tablet)
+- [ ] 1280 px (desktop)
+
+### Prints das telas
+
+Adicionar em `docs/prints/` e referenciar aqui: `inicio.png`, `treino.png`, `nutricao.png`, `historico.png` (e, se possível, um print de cada estado: loading, vazio e erro).
+
+### Deploy
+
+Link do deploy: _(preencher)_. No Vercel ou Netlify, defina `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` e adicione a URL do deploy em **Authentication → URL Configuration** no Supabase.
+
+### Testes
+
+`npm test` roda 16 testes (Vitest + Testing Library) cobrindo os estados de cada tela, validação dos formulários, mensagens de erro e compatibilidade com os dados antigos do `localStorage`. Os testes simulam `data.ts`; eles não acessam o banco real.
 
 ---
 
