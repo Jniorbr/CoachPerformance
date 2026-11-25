@@ -1,0 +1,22 @@
+@import "tailwindcss";
+
+/* Tokens do Coach (mesmas cores do style.css) expostos como classes Tailwind:
+   bg-primary, text-muted, border-line, bg-soft ... */
+@theme {
+  --color-primary: #5938db;
+  --color-primary-dark: #4c35c7;
+  --color-accent: #006b8e;
+  --color-bg: #f5f3ff;
+  --color-surface: #ffffff;
+  --color-soft: #efedfa;
+  --color-ink: #201d31;
+  --color-muted: #625e75;
+  --color-line: #e5e1f1;
+  --color-ok: #237b4b;
+  --color-ok-soft: #e5f5eb;
+  --color-warn: #a45b08;
+  --color-warn-soft: #fff1dc;
+  --color-danger: #a43e32;
+  --color-danger-soft: #fff7f5;
+  --color-danger-line: #f0d7d4;
+}
